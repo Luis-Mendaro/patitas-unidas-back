@@ -14,10 +14,14 @@
  */
 
 require("dotenv").config();
+const { sequelize } = require("../models/index");
 
 async function runAllSeeders() {
+  await sequelize.sync({ force: true });
+  console.log("[Database] ¡Las tablas fueron creadas!");
+
   await require("./userSeeder")();
-  await require("./articleSeeder")();
+  await require("./shelterUserSeeder")();
 
   /*
    * Aquí se pueden ejectuar otros seeders que hayan en el sistema.

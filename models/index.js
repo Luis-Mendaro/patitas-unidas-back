@@ -13,11 +13,21 @@ const sequelize = new Sequelize(
 
 // Requerir todos los modelos:
 const User = require("./User");
-const Article = require("./Article");
+const Pet = require("./Pet");
+const ShelterUser = require("./ShelterUser");
+const Category = require("./Category");
+const Product = require("./Product");
+const Request = require("./Request");
+const LikedPets = require("./LikedPets");
 
 // Inicializar todos los modelos:
 User.initModel(sequelize);
-Article.initModel(sequelize);
+Pet.initModel(sequelize);
+ShelterUser.initModel(sequelize);
+Category.initModel(sequelize);
+Product.initModel(sequelize);
+Request.initModel(sequelize);
+LikedPets.initModel(sequelize);
 
 /*
  * Luego de definir los modelos, se pueden establecer relaciones entre los
@@ -30,5 +40,10 @@ Article.initModel(sequelize);
 module.exports = {
   sequelize,
   User,
-  Article,
+  Pet,
+  ShelterUser,
+  Category,
+  Product,
+  Request,
+  LikedPets,
 };

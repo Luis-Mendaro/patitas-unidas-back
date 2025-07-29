@@ -1,29 +1,26 @@
 const { Model, DataTypes } = require("sequelize");
 
-class Article extends Model {
+class LikedPets extends Model {
   static initModel(sequelize) {
-    Article.init(
+    LikedPets.init(
       {
         id: {
           type: DataTypes.BIGINT.UNSIGNED,
           primaryKey: true,
           autoIncrement: true,
         },
-        title: {
+        species: {
           type: DataTypes.STRING,
-        },
-        content: {
-          type: DataTypes.TEXT,
+          allowNull: false,
         },
       },
       {
         sequelize,
-        modelName: "article", // Nombre del modelo en singular y en minúscula.
+        modelName: "likedPets", // Nombre del modelo en singular y en minúscula.
       },
     );
-
-    return Article;
+    return LikedPets;
   }
 }
 
-module.exports = Article;
+module.exports = LikedPets;

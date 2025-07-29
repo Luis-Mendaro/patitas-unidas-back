@@ -9,11 +9,20 @@ class User extends Model {
           primaryKey: true,
           autoIncrement: true,
         },
-        firstname: {
+        name: {
           type: DataTypes.STRING,
+          allowNull: false,
         },
-        lastname: {
+        email: {
           type: DataTypes.STRING,
+          allowNull: false,
+          validate: {
+            isEmail: true,
+          },
+        },
+        password: {
+          type: DataTypes.STRING,
+          allowNull: false,
         },
       },
       {
