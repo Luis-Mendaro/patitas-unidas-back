@@ -34,8 +34,8 @@ module.exports = async () => {
       color: faker.color.human(),
       age: faker.number.int({ min: 3, max: 180 }),
       isAdopted: faker.datatype.boolean(),
-      species: faker.helpers.arrayElement(categories).id,
-      shelter: faker.helpers.arrayElement(shelters).id,
+      categoryId: faker.helpers.arrayElement(categories).id,
+      shelterUserId: faker.helpers.arrayElement(shelters).id,
     });
   }
 
