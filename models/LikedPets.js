@@ -9,10 +9,6 @@ class LikedPets extends Model {
           primaryKey: true,
           autoIncrement: true,
         },
-        species: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
       },
       {
         sequelize,

@@ -9,9 +9,10 @@ class Request extends Model {
           primaryKey: true,
           autoIncrement: true,
         },
-        state: {
-          type: DataTypes.STRING,
+        status: {
+          type: DataTypes.ENUM(["active", "adopted", "cancelled"]),
           allowNull: false,
+          defaultValue: "active",
         },
       },
       {

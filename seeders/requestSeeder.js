@@ -15,29 +15,24 @@
  */
 
 const faker = require("@faker-js/faker").fakerES;
-const { Pet, Category, ShelterUser } = require("../models");
+const { Request, User, Pet, ShelterUser } = require("../models");
 
 module.exports = async () => {
-  const pets = [];
-  const sizes = ["small", "medium", "large"];
-  const categories = await Category.findAll();
+  const requests = [];
+  const users = await User.findAll();
+  const pets = await Pet.findAll();
   const shelters = await ShelterUser.findAll();
+  const status = ["active", "adopted", "cancelled"];
 
-  for (let i = 1; i < 100; i++) {
-    pets.push({
-      name: faker.animal.petName(),
-      description: faker.lorem.paragraph(),
-      images: [faker.image.avatarGitHub(), faker.image.avatarGitHub(), faker.image.avatarGitHub()],
-      sex: faker.person.sex(),
-      size: faker.helpers.arrayElement(sizes),
-      color: faker.color.human(),
-      age: faker.number.int({ min: 3, max: 180 }),
-      isAdopted: faker.datatype.boolean(),
-      categoryId: faker.helpers.arrayElement(categories).id,
+  for (let i = 0; i < 100; i++) {
+    requests.push({
+      userId: faker.helpers.arrayElement(users).id,
+      petId: faker.helpers.arrayElement(pets).id,
       shelterUserId: faker.helpers.arrayElement(shelters).id,
+      status: faker.helpers.arrayElement(status),
     });
   }
 
-  await Pet.bulkCreate(pets);
-  console.log("[Database] Se corrió el seeder de Pets.");
+  await Request.bulkCreate(requests);
+  console.log("[Database] Se corrió el seeder de Request.");
 };

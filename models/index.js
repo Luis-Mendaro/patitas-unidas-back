@@ -29,13 +29,29 @@ Product.initModel(sequelize);
 Request.initModel(sequelize);
 LikedPets.initModel(sequelize);
 
-/*
- * Luego de definir los modelos, se pueden establecer relaciones entre los
- * mismos (usando métodos como belongsTo, hasMany y belongsToMany)...
- *
- * Por ejemplo, si un User está relacionado con un Article, establecerlo
- * aquí abajo.
- */
+User.hasOne(LikedPets);
+LikedPets.belongsTo(User);
+
+User.hasMany(Request);
+Request.belongsTo(User);
+
+Category.hasMany(Pet);
+Pet.belongsTo(Category);
+
+LikedPets.belongsToMany(Pet, { through: "LikedPets_Pets" });
+Pet.belongsToMany(LikedPets, { through: "LikedPets_Pets" });
+
+Pet.hasMany(Request);
+Request.belongsTo(Pet);
+
+ShelterUser.hasMany(Pet);
+Pet.belongsTo(ShelterUser);
+
+ShelterUser.hasMany(Request);
+Request.belongsTo(ShelterUser);
+
+ShelterUser.hasMany(Product);
+Product.belongsTo(ShelterUser);
 
 module.exports = {
   sequelize,

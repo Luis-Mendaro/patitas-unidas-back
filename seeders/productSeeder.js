@@ -15,29 +15,25 @@
  */
 
 const faker = require("@faker-js/faker").fakerES;
-const { Pet, Category, ShelterUser } = require("../models");
+const { Product, ShelterUser } = require("../models");
 
 module.exports = async () => {
-  const pets = [];
-  const sizes = ["small", "medium", "large"];
-  const categories = await Category.findAll();
+  const products = [];
   const shelters = await ShelterUser.findAll();
 
-  for (let i = 1; i < 100; i++) {
-    pets.push({
+  for (let i = 0; i < 100; i++) {
+    products.push({
       name: faker.animal.petName(),
       description: faker.lorem.paragraph(),
       images: [faker.image.avatarGitHub(), faker.image.avatarGitHub(), faker.image.avatarGitHub()],
-      sex: faker.person.sex(),
-      size: faker.helpers.arrayElement(sizes),
-      color: faker.color.human(),
-      age: faker.number.int({ min: 3, max: 180 }),
-      isAdopted: faker.datatype.boolean(),
-      categoryId: faker.helpers.arrayElement(categories).id,
+      price: faker.commerce.price(),
+      isFeatured: faker.datatype.boolean(),
+      slug: "product-" + i,
+      externalLink: "https://www.animalessinhogar.net/product-page/tandem-cachorro",
       shelterUserId: faker.helpers.arrayElement(shelters).id,
     });
   }
 
-  await Pet.bulkCreate(pets);
-  console.log("[Database] Se corrió el seeder de Pets.");
+  await Product.bulkCreate(products);
+  console.log("[Database] Se corrió el seeder de Products.");
 };

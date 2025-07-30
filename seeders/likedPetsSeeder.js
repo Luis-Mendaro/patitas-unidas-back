@@ -15,27 +15,26 @@
  */
 
 const faker = require("@faker-js/faker").fakerES;
-const { User } = require("../models");
-const bcrypt = require("bcrypt");
+const { LikedPets, User, Pet } = require("../models");
 
 module.exports = async () => {
-  const users = [];
-  const hashedPassword = await bcrypt.hash("1234", 10);
+  const likedPets = [];
+  const users = await User.findAll();
+  const pets = await Pet.findAll();
 
-  users.push({
-    name: "tUser",
-    email: "test@test.com",
-    password: hashedPassword,
-  });
-
-  for (let i = 1; i < 100; i++) {
-    users.push({
-      name: faker.person.fullName(),
-      email: faker.internet.email(),
-      password: hashedPassword,
+  for (let i = 0; i < 100; i++) {
+    likedPets.push({
+      userId: faker.helpers.arrayElement(users).id,
     });
   }
 
-  await User.bulkCreate(users);
-  console.log("[Database] Se corrió el seeder de Users.");
+  await LikedPets.bulkCreate(likedPets);
+
+  const likedPetsList = await LikedPets.findAll();
+
+  for (let i = 0; i < likedPetsList.length; i++) {
+    await likedPetsList[i].addPets(faker.helpers.arrayElements(pets, { min: 0, max: 4 }));
+  }
+
+  console.log("[Database] Se corrió el seeder de LikedPets.");
 };

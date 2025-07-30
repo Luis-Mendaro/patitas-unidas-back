@@ -16,7 +16,7 @@
 
 const faker = require("@faker-js/faker").fakerES;
 const { ShelterUser, User } = require("../models");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 
 module.exports = async () => {
   const shelterUsers = [];
@@ -43,7 +43,7 @@ module.exports = async () => {
     "Treinta y Tres",
   ];
 
-  const allUsers = User.findAll();
+  const users = await User.findAll();
 
   shelterUsers.push({
     name: "tShelterUser",
@@ -53,7 +53,7 @@ module.exports = async () => {
     location: "Treinta y Tres",
     image: "shelterProfile.png",
     description: "Test Shelter Description",
-    rating: faker.helpers.arrayElements(allUsers, { min: 0, max: 50 }),
+    rating: faker.helpers.arrayElements(users, { min: 0, max: 50 }).map((user) => user.id),
   });
 
   for (let i = 1; i < 15; i++) {
@@ -65,7 +65,7 @@ module.exports = async () => {
       location: faker.helpers.arrayElement(locations),
       image: faker.image.avatarGitHub(),
       description: faker.lorem.paragraph(),
-      rating: faker.helpers.arrayElements(allUsers, { min: 0, max: 50 }),
+      rating: faker.helpers.arrayElements(users, { min: 0, max: 50 }).map((user) => user.id),
     });
   }
 
