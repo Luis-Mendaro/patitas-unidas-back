@@ -4,7 +4,7 @@ const { Pet, ShelterUser, Category } = require("../models");
 async function index(req, res) {
   try {
     const pets = await Pet.findAll({
-      include: [{ model: ShelterUser, attributes: { exclude: ["password"] } }, { model: Category }],
+      include: [{ model: ShelterUser }, { model: Category }],
     });
     res.json({ pets });
   } catch (error) {

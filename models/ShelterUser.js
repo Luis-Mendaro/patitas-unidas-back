@@ -47,7 +47,9 @@ class ShelterUser extends Model {
       },
       {
         sequelize,
-        modelName: "shelterUser", // Nombre del modelo en singular y en minúscula.
+        modelName: "shelterUser",
+        defaultScope: { attributes: { exclude: ["password"] } },
+        scopes: { withPassword: { attributes: {} } },
       },
     );
     return ShelterUser;
