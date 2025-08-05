@@ -33,10 +33,6 @@ class Pet extends Model {
           type: DataTypes.STRING,
           allowNull: false,
         },
-        // energyLevel: {
-        //   type: DataTypes.STRING,
-        //   allowNull: false,
-        // },
         age: {
           type: DataTypes.STRING,
           allowNull: false,

@@ -24,10 +24,22 @@ class User extends Model {
           type: DataTypes.STRING,
           allowNull: false,
         },
+        isAdmin: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+        },
+        profileImage: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          defaultValue: "/profileImages/defaultProfileImg.jpg",
+        },
       },
       {
         sequelize,
         modelName: "user", // Nombre del modelo en singular y en minúscula.
+        defaultScope: { attributes: { exclude: ["password"] } },
+        scopes: { withPassword: { attributes: {} } },
       },
     );
     return User;

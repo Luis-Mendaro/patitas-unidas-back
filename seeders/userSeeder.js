@@ -26,6 +26,7 @@ module.exports = async () => {
     name: "tUser",
     email: "test@test.com",
     password: hashedPassword,
+    isAdmin: true,
   });
 
   for (let i = 1; i < 100; i++) {
