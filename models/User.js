@@ -24,15 +24,18 @@ class User extends Model {
           type: DataTypes.STRING,
           allowNull: false,
         },
-        isAdmin: {
-          type: DataTypes.BOOLEAN,
-          allowNull: false,
-          defaultValue: false,
-        },
         profileImage: {
           type: DataTypes.STRING,
           allowNull: false,
           defaultValue: "/profileImages/defaultProfileImg.jpg",
+        },
+        roleCode: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          references: {
+            model: "roles",
+            key: "code",
+          },
         },
       },
       {

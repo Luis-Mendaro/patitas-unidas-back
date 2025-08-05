@@ -26,13 +26,14 @@ module.exports = async () => {
     name: "Gervasio Artigas",
     email: "test@user.com",
     password: hashedPassword,
+    roleCode: 300,
   });
 
   users.push({
     name: "José Pedro Varela",
     email: "test@admin.com",
     password: hashedPassword,
-    isAdmin: true,
+    roleCode: 100,
   });
 
   for (let i = 2; i < 100; i++) {
@@ -40,6 +41,7 @@ module.exports = async () => {
       name: faker.person.fullName(),
       email: faker.internet.email(),
       password: hashedPassword,
+      roleCode: 300,
     });
   }
 
