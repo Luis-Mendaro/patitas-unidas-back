@@ -11,13 +11,13 @@ async function login(req, res) {
       },
     });
 
-    if (!user) return res.status(404).json({ message: "Credenciales inválidas" });
+    if (!user) return res.status(401).json({ message: "Credenciales inválidas" });
     const userJson = user.toJSON();
     delete userJson.password;
 
     const isValidPassword = await bcrypt.compare(req.body.password, user.password);
 
-    if (!isValidPassword) return res.status(404).json({ message: "Credenciales inválidas" });
+    if (!isValidPassword) return res.status(401).json({ message: "Credenciales inválidas" });
 
     const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET);
     return res.status(200).json({
