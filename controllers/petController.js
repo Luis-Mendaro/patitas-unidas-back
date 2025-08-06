@@ -5,11 +5,25 @@ const { Pet, ShelterUser, Category } = require("../models");
 
 async function index(req, res) {
   try {
-    const { size, sex, ageMin, ageMax, location, species, page = 1, limit = 20 } = req.query;
+    const {
+      size,
+      sex,
+      isAdopted,
+      ageMin,
+      ageMax,
+      location,
+      species,
+      page = 1,
+      limit = 20,
+    } = req.query;
 
     const where = {};
     if (size) where.size = size;
     if (sex) where.sex = sex;
+
+    if (typeof isAdopted !== "undefined") {
+      where.isAdopted = isAdopted === "true";
+    }
 
     if (ageMin || ageMax) {
       where.age = {};
