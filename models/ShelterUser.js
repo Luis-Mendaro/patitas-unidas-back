@@ -37,12 +37,20 @@ class ShelterUser extends Model {
           allowNull: false,
         },
         description: {
-          type: DataTypes.STRING,
+          type: DataTypes.TEXT,
           allowNull: false,
         },
         rating: {
           type: DataTypes.JSON,
           allowNull: false,
+        },
+        roleCode: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          references: {
+            model: "roles",
+            key: "code",
+          },
         },
       },
       {
