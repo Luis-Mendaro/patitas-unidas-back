@@ -12,7 +12,7 @@ const authorizeRoles = require("../middlewares/authorizeRolesMiddleware");
  */
 router.use(authMiddleware);
 
-router.use(authorizeRoles(["admin"]));
+router.use(authorizeRoles(["admin", "user"]));
 
 router.get("/", userController.index);
 router.post("/", userController.store);

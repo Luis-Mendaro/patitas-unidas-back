@@ -28,7 +28,10 @@ async function likePet(req, res) {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    const userLikedPets = user.likedPet;
+    let userLikedPets = user.likedPet;
+    if (!userLikedPets) {
+      userLikedPets = await LikedPets.create({ userId: user.id });
+    }
 
     const pet = await Pet.findByPk(petId);
     if (!pet) {
