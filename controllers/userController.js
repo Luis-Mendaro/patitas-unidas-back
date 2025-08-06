@@ -23,8 +23,13 @@ async function show(req, res) {
 async function store(req, res) {
   try {
     const { name, email, password } = req.body;
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ message: "El correo electrónico ya está registrado." });
+    }
     const hashpassword = await bcrypt.hash(password, 10);
     const user = await User.create({ name, email, password: hashpassword, roleCode: 300 });
+    await LikedPets.create({ userId: user.id });
     return res.status(201).json({ user });
   } catch (error) {
     return res.status(500).json({ message: "error al crear usuario" });
