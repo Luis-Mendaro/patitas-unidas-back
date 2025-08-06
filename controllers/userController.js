@@ -1,4 +1,4 @@
-const { User, LikedPets, Pet } = require("../models");
+const { User, LikedPets, Pet, Category, ShelterUser } = require("../models");
 
 // Display a listing of the resource.
 async function index(req, res) {
@@ -20,7 +20,7 @@ async function destroy(req, res) {}
 async function likePet(req, res) {
   try {
     const { userId, petId } = req.params;
-    const user = await User.findByPk(userId, {
+    let user = await User.findByPk(userId, {
       include: { model: LikedPets, include: Pet },
     });
 
@@ -39,7 +39,16 @@ async function likePet(req, res) {
       ? await userLikedPets.removePet(pet)
       : await userLikedPets.addPet(pet);
 
-    return res.json({ msg: "User's liked pets updated successfully." });
+    user = await User.findByPk(userId, {
+      include: [
+        {
+          model: LikedPets,
+          include: [{ model: Pet, include: [{ model: Category }, { model: ShelterUser }] }],
+        },
+      ],
+    });
+
+    return res.json(user.likedPet.pets);
   } catch (error) {
     return res.status(500).json({ msg: error });
   }
