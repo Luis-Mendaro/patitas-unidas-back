@@ -1,4 +1,4 @@
-const { User, ShelterUser, Role } = require("../models");
+const { User, ShelterUser, Role, LikedPets, Pet, Category } = require("../models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -11,6 +11,12 @@ async function login(req, res) {
     }
 
     let user = await User.scope("withPassword").findOne({
+      include: [
+        {
+          model: LikedPets,
+          include: [{ model: Pet, include: [{ model: Category }, { model: ShelterUser }] }],
+        },
+      ],
       where: { email },
     });
 
