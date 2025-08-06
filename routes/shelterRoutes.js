@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/userController");
+const shelterController = require("../controllers/shelterController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const authorizeRoles = require("../middlewares/authorizeRolesMiddleware");
 
@@ -10,15 +10,13 @@ const authorizeRoles = require("../middlewares/authorizeRolesMiddleware");
  * Notar que todos estos endpoints tienen como prefijo el string "/users",
  * tal como se definió en el archivo `routes/index.js`.
  */
+router.post("/", shelterController.store);
+
 router.use(authMiddleware);
 
-router.use(authorizeRoles(["admin"]));
-
-router.get("/", userController.index);
-router.post("/", userController.store);
-router.get("/:id", userController.show);
-router.patch("/:id", userController.update);
-router.delete("/:id", userController.destroy);
-router.patch("/:userId/likePet/:petId", userController.likePet);
+router.get("/", shelterController.index);
+router.get("/:id", shelterController.show);
+router.patch("/:id", shelterController.update);
+router.delete("/:id", shelterController.destroy);
 
 module.exports = router;

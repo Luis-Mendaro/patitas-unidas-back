@@ -1,5 +1,5 @@
-const { User, LikedPets, Pet } = require("../models");
 const bcrypt = require("bcryptjs");
+const { User, LikedPets, Pet, Category, ShelterUser } = require("../models");
 
 async function index(req, res) {
   try {
@@ -64,6 +64,42 @@ async function destroy(req, res) {
     return res.status(200).json({ message: "Usuario eliminado" });
   } catch (error) {
     return res.status(500).json({ message: "Error al eliminar usuario" });
+    
+async function likePet(req, res) {
+  try {
+    const { userId, petId } = req.params;
+    let user = await User.findByPk(userId, {
+      include: { model: LikedPets, include: Pet },
+    });
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    const userLikedPets = user.likedPet;
+
+    const pet = await Pet.findByPk(petId);
+    if (!pet) {
+      return res.status(404).json({ msg: "Pet not found" });
+    }
+
+    (await userLikedPets.hasPet(pet))
+      ? await userLikedPets.removePet(pet)
+      : await userLikedPets.addPet(pet);
+
+    user = await User.findByPk(userId, {
+      include: [
+        {
+          model: LikedPets,
+          include: [{ model: Pet, include: [{ model: Category }, { model: ShelterUser }] }],
+        },
+      ],
+    });
+
+    return res.json(user.likedPet.pets);
+  } catch (error) {
+    return res.status(500).json({ msg: error });
+
   }
 }
 
@@ -73,4 +109,5 @@ module.exports = {
   store,
   update,
   destroy,
+  likePet,
 };

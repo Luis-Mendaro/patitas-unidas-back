@@ -43,6 +43,7 @@ class ShelterUser extends Model {
         rating: {
           type: DataTypes.JSON,
           allowNull: false,
+          defaultValue: [],
         },
         roleCode: {
           type: DataTypes.INTEGER,

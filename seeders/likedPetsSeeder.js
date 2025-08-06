@@ -22,9 +22,9 @@ module.exports = async () => {
   const users = await User.findAll();
   const pets = await Pet.findAll();
 
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 30; i++) {
     likedPets.push({
-      userId: faker.helpers.arrayElement(users).id,
+      userId: users[i].id,
     });
   }
 
