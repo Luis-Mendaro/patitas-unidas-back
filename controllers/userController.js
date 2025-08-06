@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, LikedPets, Pet } = require("../models");
 
 // Display a listing of the resource.
 async function index(req, res) {
@@ -17,8 +17,33 @@ async function update(req, res) {}
 // Remove the specified resource from storage.
 async function destroy(req, res) {}
 
-// Otros handlers...
-// ...
+async function likePet(req, res) {
+  try {
+    const { userId, petId } = req.params;
+    const user = await User.findByPk(userId, {
+      include: { model: LikedPets, include: Pet },
+    });
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    const userLikedPets = user.likedPet;
+
+    const pet = await Pet.findByPk(petId);
+    if (!pet) {
+      return res.status(404).json({ msg: "Pet not found" });
+    }
+
+    (await userLikedPets.hasPet(pet))
+      ? await userLikedPets.removePet(pet)
+      : await userLikedPets.addPet(pet);
+
+    return res.json({ msg: "User's liked pets updated successfully." });
+  } catch (error) {
+    return res.status(500).json({ msg: error });
+  }
+}
 
 module.exports = {
   index,
@@ -26,4 +51,5 @@ module.exports = {
   store,
   update,
   destroy,
+  likePet,
 };

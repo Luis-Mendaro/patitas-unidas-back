@@ -15,5 +15,6 @@ router.post("/", userController.store);
 router.get("/:id", userController.show);
 router.patch("/:id", userController.update);
 router.delete("/:id", userController.destroy);
+router.patch("/:userId/likePet/:petId", userController.likePet);
 
 module.exports = router;
