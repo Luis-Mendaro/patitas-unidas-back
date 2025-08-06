@@ -64,7 +64,9 @@ async function destroy(req, res) {
     return res.status(200).json({ message: "Usuario eliminado" });
   } catch (error) {
     return res.status(500).json({ message: "Error al eliminar usuario" });
-    
+  }
+}
+
 async function likePet(req, res) {
   try {
     const { userId, petId } = req.params;
@@ -102,7 +104,6 @@ async function likePet(req, res) {
     return res.json(user.likedPet.pets);
   } catch (error) {
     return res.status(500).json({ msg: error });
-
   }
 }
 
