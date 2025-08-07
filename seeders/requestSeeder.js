@@ -30,6 +30,19 @@ module.exports = async () => {
       petId: faker.helpers.arrayElement(pets).id,
       shelterUserId: faker.helpers.arrayElement(shelters).id,
       status: faker.helpers.arrayElement(status),
+      requestContent: {
+        fullname: faker.person.fullName(),
+        email: faker.internet.email(),
+        phoneNumber: faker.phone.number(),
+        physicalAddress: faker.location.streetAddress(),
+        petsAllowed: faker.datatype.boolean(),
+        outdoorSpace: faker.lorem.sentence(),
+        hasKids: faker.number.int({ max: 15 }),
+        willingToCoverMedical: faker.datatype.boolean(),
+        adoptionReason: faker.lorem.sentence(),
+        petExpectations: faker.lorem.sentence(),
+        reasonForChoosingPet: faker.lorem.sentence(),
+      },
     });
   }
 

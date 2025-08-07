@@ -34,7 +34,7 @@ class Pet extends Model {
           allowNull: false,
         },
         age: {
-          type: DataTypes.STRING,
+          type: DataTypes.SMALLINT,
           allowNull: false,
         },
         isAdopted: {

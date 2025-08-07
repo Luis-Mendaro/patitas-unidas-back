@@ -19,6 +19,7 @@ const Category = require("./Category");
 const Product = require("./Product");
 const Request = require("./Request");
 const LikedPets = require("./LikedPets");
+const Role = require("./Role");
 
 // Inicializar todos los modelos:
 User.initModel(sequelize);
@@ -28,6 +29,7 @@ Category.initModel(sequelize);
 Product.initModel(sequelize);
 Request.initModel(sequelize);
 LikedPets.initModel(sequelize);
+Role.initModel(sequelize);
 
 User.hasOne(LikedPets);
 LikedPets.belongsTo(User);
@@ -53,6 +55,12 @@ Request.belongsTo(ShelterUser);
 ShelterUser.hasMany(Product);
 Product.belongsTo(ShelterUser);
 
+Role.hasMany(User, { foreignKey: "roleCode", as: "users" });
+User.belongsTo(Role, { foreignKey: "roleCode", as: "role" });
+
+Role.hasMany(ShelterUser, { foreignKey: "roleCode", as: "shelterUsers" });
+ShelterUser.belongsTo(Role, { foreignKey: "roleCode", as: "role" });
+
 module.exports = {
   sequelize,
   User,
@@ -62,4 +70,5 @@ module.exports = {
   Product,
   Request,
   LikedPets,
+  Role,
 };

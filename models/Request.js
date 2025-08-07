@@ -14,6 +14,10 @@ class Request extends Model {
           allowNull: false,
           defaultValue: "active",
         },
+        requestContent: {
+          type: DataTypes.JSON,
+          allowNull: false,
+        },
       },
       {
         sequelize,

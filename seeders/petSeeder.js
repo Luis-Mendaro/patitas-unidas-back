@@ -1,21 +1,6 @@
-/*
- * El seeder no es más que un archivo que contiene una función que se encarga
- * de insertar datos (generalmente de prueba) en una base de datos.
- *
- * El nombre "seeder" es una convención y significa "semillero".
- *
- * Además, en este caso, se está usando una librería llamada Faker
- * (https://fakerjs.dev/) para facilitar la creación de datos ficticios como
- * nombres, apellidos, títulos, direcciones y demás textos.
- *
- * Suele ser común que en los seeders exista un `for` donde se define la
- * cantidad de registros de prueba que se insertarán en la base de datos.
- *
- * En este ejemplo se están insertando 100 usuarios con nombres ficticios.
- */
-
 const faker = require("@faker-js/faker").fakerES;
 const { Pet, Category, ShelterUser } = require("../models");
+const petImages = require("./petImages");
 
 module.exports = async () => {
   const pets = [];
@@ -23,17 +8,25 @@ module.exports = async () => {
   const categories = await Category.findAll();
   const shelters = await ShelterUser.findAll();
 
-  for (let i = 1; i < 100; i++) {
+  for (let i = 0; i < 100; i++) {
+    const category = faker.helpers.arrayElement(categories);
+    const species = category.species.toLowerCase();
+
+    const imagePool = petImages[species] || petImages.other;
+
     pets.push({
       name: faker.animal.petName(),
       description: faker.lorem.paragraph(),
-      images: [faker.image.avatarGitHub(), faker.image.avatarGitHub(), faker.image.avatarGitHub()],
+      images: [
+        faker.helpers.arrayElement(imagePool),
+        "https://upload.wikimedia.org/wikipedia/commons/f/fc/Juan_Manuel_Blanes_-_Artigas_en_la_Ciudadela.jpg",
+      ],
       sex: faker.person.sex(),
       size: faker.helpers.arrayElement(sizes),
       color: faker.color.human(),
       age: faker.number.int({ min: 3, max: 180 }),
       isAdopted: faker.datatype.boolean(),
-      categoryId: faker.helpers.arrayElement(categories).id,
+      categoryId: category.id,
       shelterUserId: faker.helpers.arrayElement(shelters).id,
     });
   }

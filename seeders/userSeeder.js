@@ -23,17 +23,25 @@ module.exports = async () => {
   const hashedPassword = await bcrypt.hash("1234", 10);
 
   users.push({
-    name: "tUser",
-    email: "test@test.com",
+    name: "Gervasio Artigas",
+    email: "test@user.com",
     password: hashedPassword,
-    isAdmin: true,
+    roleCode: 300,
   });
 
-  for (let i = 1; i < 100; i++) {
+  users.push({
+    name: "José Pedro Varela",
+    email: "test@admin.com",
+    password: hashedPassword,
+    roleCode: 100,
+  });
+
+  for (let i = 2; i < 100; i++) {
     users.push({
       name: faker.person.fullName(),
       email: faker.internet.email(),
       password: hashedPassword,
+      roleCode: 300,
     });
   }
 

@@ -5,6 +5,7 @@ async function runAllSeeders() {
   await sequelize.sync({ force: true });
   console.log("[Database] ¡Las tablas fueron creadas!");
 
+  await require("./roleSeeder")();
   await require("./userSeeder")();
   await require("./shelterUserSeeder")();
   await require("./categorySeeder")();
