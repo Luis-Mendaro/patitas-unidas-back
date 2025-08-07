@@ -22,7 +22,7 @@ module.exports = async () => {
   const users = await User.findAll();
   const pets = await Pet.findAll();
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < users.length; i++) {
     likedPets.push({
       userId: users[i].id,
     });
