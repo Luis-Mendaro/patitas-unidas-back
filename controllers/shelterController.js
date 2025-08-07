@@ -13,7 +13,7 @@ async function index(req, res) {
 
 async function show(req, res) {
   const { id } = req.params;
-  const shelter = await ShelterUser.findByPk(id, { include: "pets" });
+  const shelter = await ShelterUser.findByPk(id, { include: ["pets", "requests", "products"] });
   return res.json({ shelter });
 }
 
