@@ -5,7 +5,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const authorizeRoles = require("../middlewares/authorizeRolesMiddleware");
 
 router.use(authMiddleware);
-router.use(authorizeRoles(["admin", "user"]));
+router.use(authorizeRoles(["admin", "user", "shelter"]));
 
 router.get("/", requestController.index);
 router.post("/", requestController.store);

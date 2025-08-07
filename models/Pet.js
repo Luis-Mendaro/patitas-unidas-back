@@ -42,14 +42,6 @@ class Pet extends Model {
           allowNull: false,
           defaultValue: false,
         },
-        shelterUserId: {
-          type: DataTypes.BIGINT.UNSIGNED,
-          allowNull: false,
-        },
-        categoryId: {
-          type: DataTypes.BIGINT.UNSIGNED,
-          allowNull: false,
-        },
       },
       {
         sequelize,
