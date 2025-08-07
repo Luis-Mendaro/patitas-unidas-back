@@ -62,24 +62,105 @@ async function index(req, res) {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Error fetching pets" });
+    res.status(500).json({ message: "Error fetching pets" });
   }
 }
 
 // Display the specified resource.
-async function show(req, res) {}
+async function show(req, res) {
+  try {
+    const petId = req.params.id;
+    const pet = await Pet.findByPk(petId, { include: [ShelterUser, Category] });
+
+    if (!pet) {
+      return res.status(404).json({ message: "Mascota no encontrada" });
+    }
+    return res.status(200).json({ pet });
+  } catch (error) {
+    return res.status(500).json({ message: "Error del servidor" });
+  }
+}
 
 // Store a newly created resource in storage.
-async function store(req, res) {}
+async function store(req, res) {
+  try {
+    const { name, description, images, sex, size, color, age, shelterUserId, categoryId } =
+      req.body;
+    if (
+      !name ||
+      !description ||
+      !images ||
+      !sex ||
+      !size ||
+      !color ||
+      !age ||
+      !shelterUserId ||
+      !categoryId
+    ) {
+      return res.status(400).json({ message: "Faltan campos obligatorios" });
+    }
+    await Pet.create({
+      name,
+      description,
+      images,
+      sex,
+      size,
+      color,
+      age,
+      shelterUserId,
+      categoryId,
+    });
+    return res.status(200).json({ message: "Se creo una nueva mascota" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error del servidor" });
+  }
+}
 
 // Update the specified resource in storage.
-async function update(req, res) {}
+async function update(req, res) {
+  try {
+    const petId = req.params.id;
+    const { name, description, images, sex, size, color, age, shelterUserId, categoryId } =
+      req.body;
+    const pet = await Pet.findByPk(petId);
+
+    if (!pet) {
+      return res.status(404).json({ message: "Mascota no encontrada" });
+    }
+    if (name) pet.name = name;
+    if (description) pet.description = description;
+    if (images) pet.images = images;
+    if (sex) pet.sex = sex;
+    if (size) pet.size = size;
+    if (color) pet.color = color;
+    if (age) pet.age = age;
+    if (shelterUserId) pet.shelterUserId = shelterUserId;
+    if (categoryId) pet.categoryId = categoryId;
+
+    await pet.save();
+    return res.status(200).json({ message: `${pet.name} fue actualizado/a correctamente`, pet });
+  } catch (error) {
+    return res.status(500).json({ message: "Error del servidor" });
+  }
+}
 
 // Remove the specified resource from storage.
-async function destroy(req, res) {}
+async function destroy(req, res) {
+  try {
+    const petId = req.params.id;
+    const pet = await Pet.findByPk(petId);
 
-// Otros handlers...
-// ...
+    if (!pet) {
+      return res.status(404).json({ message: "Mascota no encontrada" });
+    }
+
+    await pet.destroy();
+
+    return res.status(200).json({ message: `Se borro a ${pet.name} correctamente` });
+  } catch (error) {
+    return res.status(500).json({ message: "Error del servidor" });
+  }
+}
 
 module.exports = {
   index,
