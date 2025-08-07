@@ -27,7 +27,7 @@ class User extends Model {
         profileImage: {
           type: DataTypes.STRING,
           allowNull: false,
-          defaultValue: "/profileImages/defaultProfileImg.jpg",
+          defaultValue: "/pfps/dog.svg",
         },
         roleCode: {
           type: DataTypes.INTEGER,

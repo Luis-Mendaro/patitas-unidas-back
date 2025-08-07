@@ -43,11 +43,11 @@ class Pet extends Model {
           defaultValue: false,
         },
         shelterUserId: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.BIGINT.UNSIGNED,
           allowNull: false,
         },
         categoryId: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.BIGINT.UNSIGNED,
           allowNull: false,
         },
       },

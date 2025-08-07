@@ -21,12 +21,24 @@ const bcrypt = require("bcryptjs");
 module.exports = async () => {
   const users = [];
   const hashedPassword = await bcrypt.hash("1234", 10);
+  const pfps = [
+    "BlackCat",
+    "Bulldog",
+    "Cat",
+    "Dog",
+    "Hamster",
+    "Lion",
+    "Parrot",
+    "Penguin",
+    "Tiger",
+  ];
 
   users.push({
     name: "Gervasio Artigas",
     email: "test@user.com",
     password: hashedPassword,
     roleCode: 300,
+    profileImage: "/pfps/dog.svg",
   });
 
   users.push({
@@ -37,11 +49,13 @@ module.exports = async () => {
   });
 
   for (let i = 2; i < 100; i++) {
+    const pfp = faker.helpers.arrayElement(pfps);
     users.push({
       name: faker.person.fullName(),
       email: faker.internet.email(),
       password: hashedPassword,
       roleCode: 300,
+      profileImage: `/pfps/${pfp}.svg`,
     });
   }
 
