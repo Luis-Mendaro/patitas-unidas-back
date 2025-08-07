@@ -16,7 +16,7 @@
 
 const faker = require("@faker-js/faker").fakerES;
 const { User } = require("../models");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 module.exports = async () => {
   const users = [];
