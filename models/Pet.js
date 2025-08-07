@@ -42,6 +42,14 @@ class Pet extends Model {
           allowNull: false,
           defaultValue: false,
         },
+        shelterUserId: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+        },
+        categoryId: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+        },
       },
       {
         sequelize,
