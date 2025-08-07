@@ -3,9 +3,9 @@ const router = express.Router();
 const petController = require("../controllers/petController");
 
 router.get("/", petController.index);
-// router.post("/", articleController.store);
-// router.get("/:id", articleController.show);
-// router.patch("/:id", articleController.update);
-// router.delete("/:id", articleController.destroy);
+router.post("/", petController.store);
+router.get("/:id", petController.show);
+router.patch("/:id", petController.update);
+router.delete("/:id", petController.destroy);
 
 module.exports = router;
