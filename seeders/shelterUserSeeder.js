@@ -17,31 +17,11 @@
 const faker = require("@faker-js/faker").fakerES;
 const { ShelterUser, User } = require("../models");
 const bcrypt = require("bcryptjs");
+const { nameShelters, locations } = require("./seedersData/sheltersData");
 
 module.exports = async () => {
   const shelterUsers = [];
   const hashedPassword = await bcrypt.hash("1234", 10);
-  const locations = [
-    "Artigas",
-    "Canelones",
-    "Cerro Largo",
-    "Colonia",
-    "Durazno",
-    "Flores",
-    "Florida",
-    "Lavalleja",
-    "Maldonado",
-    "Montevideo",
-    "Paysandú",
-    "Río Negro",
-    "Rivera",
-    "Rocha",
-    "Salto",
-    "San José",
-    "Soriano",
-    "Tacuarembó",
-    "Treinta y Tres",
-  ];
 
   const users = await User.findAll();
 
@@ -59,9 +39,17 @@ module.exports = async () => {
   });
 
   for (let i = 1; i < 15; i++) {
+    const name = nameShelters[i];
+    const email =
+      name
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "") + "@gmail.com";
     shelterUsers.push({
-      name: faker.person.fullName(),
-      email: faker.internet.email(),
+      name,
+      email,
       password: hashedPassword,
       phoneNumber: faker.phone.number(),
       location: faker.helpers.arrayElement(locations),

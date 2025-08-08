@@ -1,11 +1,10 @@
 const faker = require("@faker-js/faker").fakerES;
 const { Pet, Category, ShelterUser } = require("../models");
-const petImages = require("./petImages");
+const { petsNames, petsColors, petImages } = require("./seedersData/petsData");
 
 module.exports = async () => {
   const pets = [];
   const sizes = ["small", "medium", "large"];
-  const categories = await Category.findAll();
   const shelters = await ShelterUser.findAll();
 
   const options = [
@@ -14,20 +13,20 @@ module.exports = async () => {
     { value: 3, weight: 0.1 },
   ];
 
+  const categoryDict = [
+    { id: 1, name: "dog" },
+    { id: 2, name: "cat" },
+    { id: 3, name: "other" },
+  ];
+
   for (let i = 0; i < 100; i++) {
-    const category = faker.helpers.arrayElement(categories);
-    const species = category.species.toLowerCase();
+    const categoryId = faker.helpers.weightedArrayElement(options);
+    const category = categoryDict.find((cat) => cat.id === categoryId);
 
-    const imagePool = petImages[species] || petImages.other;
-
-    const options = [
-      { value: 1, weight: 0.6 },
-      { value: 2, weight: 0.3 },
-      { value: 3, weight: 0.1 },
-    ];
+    const imagePool = petImages[category.name] || petImages.other;
 
     pets.push({
-      name: faker.animal.petName(),
+      name: faker.helpers.arrayElement(petsNames),
       description: faker.lorem.paragraph(),
       images: [
         faker.helpers.arrayElement(imagePool),
@@ -35,10 +34,10 @@ module.exports = async () => {
       ],
       sex: faker.person.sex(),
       size: faker.helpers.arrayElement(sizes),
-      color: faker.color.human(),
+      color: faker.helpers.arrayElement(petsColors),
       age: faker.number.int({ min: 3, max: 180 }),
       isAdopted: faker.datatype.boolean(0.2),
-      categoryId: faker.helpers.weightedArrayElement(options),
+      categoryId,
       shelterUserId: faker.helpers.arrayElement(shelters).id,
     });
   }
