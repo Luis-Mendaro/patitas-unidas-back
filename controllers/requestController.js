@@ -1,7 +1,12 @@
 const { Request } = require("../models");
 
 async function index(req, res) {
-  const requests = await Request.findAll({ include: ["pet", "user"], limit: 20 });
+  const requests = await Request.findAll({
+    include: ["pet", "user"],
+    limit: 20,
+    order: [["createdAt", "DESC"]],
+  });
+
   res.status(200).json({ requests });
 }
 

@@ -43,6 +43,7 @@ module.exports = async () => {
         petExpectations: faker.lorem.sentence(),
         reasonForChoosingPet: faker.lorem.sentence(),
       },
+      createdAt: faker.date.recent({ days: 3 }),
     });
   }
 
