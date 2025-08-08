@@ -8,6 +8,12 @@ module.exports = async () => {
   const categories = await Category.findAll();
   const shelters = await ShelterUser.findAll();
 
+  const options = [
+    { value: 1, weight: 0.5 },
+    { value: 2, weight: 0.4 },
+    { value: 3, weight: 0.1 },
+  ];
+
   for (let i = 0; i < 100; i++) {
     const category = faker.helpers.arrayElement(categories);
     const species = category.species.toLowerCase();
@@ -25,8 +31,8 @@ module.exports = async () => {
       size: faker.helpers.arrayElement(sizes),
       color: faker.color.human(),
       age: faker.number.int({ min: 3, max: 180 }),
-      isAdopted: faker.datatype.boolean(),
-      categoryId: category.id,
+      isAdopted: faker.datatype.boolean(0.2),
+      categoryId: faker.helpers.weightedArrayElement(options),
       shelterUserId: faker.helpers.arrayElement(shelters).id,
     });
   }
