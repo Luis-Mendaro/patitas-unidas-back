@@ -24,11 +24,39 @@ async function store(req, res) {
     });
     return res.status(201).json({ newRequest });
   } catch (error) {
-    return res.status(500).json({ message: "error al crear nueva request" });
+    return res
+      .status(500)
+      .json({ message: "There was an error when trying to create the new request" });
   }
 }
 
-async function update(req, res) {}
+async function update(req, res) {
+  try {
+    const validStatusValues = ["active", "cancelled", "adopted"];
+    const requestId = req.params.id;
+    const { status } = req.body;
+    if (!validStatusValues.includes(status)) {
+      return res.status(400).json({
+        msg: "There was an attempt to update a request's status to an invalid status value",
+      });
+    }
+
+    const request = await Request.findByPk(requestId);
+    if (!request) {
+      return res.status(404).json({ msg: "Request not found" });
+    }
+
+    await request.update({
+      status,
+    });
+
+    return res.status(200).json({ msg: "Request status updated successfully" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ msg: "There was an error when trying to update the request's status" });
+  }
+}
 
 module.exports = {
   index,
