@@ -50,10 +50,12 @@ module.exports = async () => {
 
   for (let i = 2; i < 100; i++) {
     const pfp = faker.helpers.arrayElement(pfps);
-    const name = faker.person.fullName();
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
+
     users.push({
-      name: name,
-      email: faker.internet.email(name),
+      name: `${firstName} ${lastName}`,
+      email: faker.internet.email({ firstName, lastName }),
       password: hashedPassword,
       roleCode: 300,
       profileImage: `/pfps/${pfp}.svg`,
