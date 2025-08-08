@@ -37,11 +37,7 @@ module.exports = async () => {
       size: faker.helpers.arrayElement(sizes),
       color: faker.color.human(),
       age: faker.number.int({ min: 3, max: 180 }),
-<<<<<<< Updated upstream
       isAdopted: faker.datatype.boolean(0.2),
-=======
-      isAdopted: faker.datatype.boolean(),
->>>>>>> Stashed changes
       categoryId: faker.helpers.weightedArrayElement(options),
       shelterUserId: faker.helpers.arrayElement(shelters).id,
     });
