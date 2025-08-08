@@ -50,11 +50,15 @@ async function update(req, res) {
       status,
     });
 
-    return res.status(200).json({ msg: "Request status updated successfully" });
-  } catch (error) {
+    const fullRequest = await Request.findByPk(requestId, { include: ["user", "pet"] });
+
     return res
-      .status(500)
-      .json({ msg: "There was an error when trying to update the request's status" });
+      .status(200)
+      .json({ msg: "Request status updated successfully", request: fullRequest });
+  } catch (error) {
+    return res.status(500).json({
+      msg: "There was an error when trying to update the request's status",
+    });
   }
 }
 
