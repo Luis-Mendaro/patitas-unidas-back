@@ -22,15 +22,15 @@ module.exports = async () => {
   const users = [];
   const hashedPassword = await bcrypt.hash("1234", 10);
   const pfps = [
-    "BlackCat",
-    "Bulldog",
-    "Cat",
-    "Dog",
-    "Hamster",
-    "Lion",
-    "Parrot",
-    "Penguin",
-    "Tiger",
+    "blackCat",
+    "bulldog",
+    "cat",
+    "dog",
+    "hamster",
+    "lion",
+    "parrot",
+    "penguin",
+    "tiger",
   ];
 
   users.push({
@@ -50,9 +50,10 @@ module.exports = async () => {
 
   for (let i = 2; i < 100; i++) {
     const pfp = faker.helpers.arrayElement(pfps);
+    const name = faker.person.fullName();
     users.push({
-      name: faker.person.fullName(),
-      email: faker.internet.email(),
+      name: name,
+      email: faker.internet.email(name),
       password: hashedPassword,
       roleCode: 300,
       profileImage: `/pfps/${pfp}.svg`,
