@@ -52,6 +52,9 @@ async function update(req, res) {
 
     const fullRequest = await Request.findByPk(requestId, { include: ["user", "pet"] });
 
+    if (fullRequest.status === "adopted") {
+      await fullRequest.pet.update({ isAdopted: true });
+    }
     return res
       .status(200)
       .json({ msg: "Request status updated successfully", request: fullRequest });
