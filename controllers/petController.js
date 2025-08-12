@@ -1,5 +1,9 @@
 const { Op } = require("sequelize");
 const { Pet, ShelterUser, Category } = require("../models");
+const formidable = require("formidable");
+const { createClient } = require("@supabase/supabase-js");
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const fs = require("fs");
 
 // Display a listing of the resource.
 
@@ -84,33 +88,48 @@ async function show(req, res) {
 // Store a newly created resource in storage.
 async function store(req, res) {
   try {
-    const { name, description, images, sex, size, color, age, shelterUserId, categoryId } =
-      req.body;
-    if (
-      !name ||
-      !description ||
-      !images ||
-      !sex ||
-      !size ||
-      !color ||
-      !age ||
-      !shelterUserId ||
-      !categoryId
-    ) {
-      return res.status(400).json({ message: "Faltan campos obligatorios" });
-    }
-    await Pet.create({
-      name,
-      description,
-      images,
-      sex,
-      size,
-      color,
-      age,
-      shelterUserId,
-      categoryId,
+    const form = formidable({
+      multiples: true,
+      keepExtensions: true,
     });
-    return res.status(200).json({ message: "Se creo una nueva mascota" });
+
+    form.parse(req, async (err, fields, files) => {
+      const { name, description, sex, size, color, age, shelterUserId, categoryId } = fields;
+
+      if (!Object.values(fields).every(Boolean)) {
+        return res.status(400).json({ message: "Faltan campos obligatorios" });
+      }
+
+      //Uploading image to supabase
+      const { data, error } = await supabase.storage
+        .from("PetImages")
+        .upload(files.images.newFilename, fs.createReadStream(files.images.filepath), {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: files.images.mimetype,
+          duplex: "half",
+        });
+
+      // obtaining the url for said image from the bucket
+      // const { data: publicUrlData } = supabase.storage
+      //   .from("PetImages")
+      //   .getPublicUrl(files.images.newFilename);
+
+      // const imageUrl = publicUrlData?.publicUrl;
+
+      await Pet.create({
+        name,
+        description,
+        images: [files.images.newFilename],
+        sex,
+        size,
+        color,
+        age,
+        shelterUserId,
+        categoryId,
+      });
+      return res.status(200).json({ message: "Se creo una nueva mascota" });
+    });
   } catch (error) {
     return res.status(500).json({ message: "Error del servidor" });
   }

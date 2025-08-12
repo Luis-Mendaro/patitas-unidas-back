@@ -18,7 +18,7 @@ class Pet extends Model {
           allowNull: false,
         },
         images: {
-          type: DataTypes.JSON, //maybe Array or Json
+          type: DataTypes.ARRAY(DataTypes.STRING),
           allowNull: false,
         },
         sex: {

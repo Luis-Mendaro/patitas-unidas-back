@@ -32,8 +32,8 @@ class ShelterUser extends Model {
           type: DataTypes.STRING,
           allowNull: false,
         },
-        image: {
-          type: DataTypes.STRING,
+        images: {
+          type: DataTypes.ARRAY(DataTypes.STRING),
           allowNull: false,
         },
         description: {

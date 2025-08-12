@@ -1,6 +1,9 @@
 const { ShelterUser } = require("../models");
 const formidable = require("formidable");
 const bcrypt = require("bcryptjs");
+const { createClient } = require("@supabase/supabase-js");
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const fs = require("fs");
 
 async function index(req, res) {
   try {
@@ -20,7 +23,6 @@ async function show(req, res) {
 async function store(req, res) {
   const form = formidable({
     multiples: true,
-    uploadDir: __dirname + "/public/img",
     keepExtensions: true,
   });
 
@@ -42,17 +44,23 @@ async function store(req, res) {
         location,
         description,
       };
-      // if (files.image) {
-      //   shelterData.image = files.image.newFilename;
-      //   await supabase.storage
-      //     .from("avatars")
-      //     .upload(files.image.newFilename, fs.readFileSync(files.image.filepath), {
-      //       cacheControl: "3600",
-      //       upsert: false,
-      //       contentType: files.image.mimetype,
-      //     });
-      // }
-      shelterData.image = files.image.newFilename;
+      if (files.images) {
+        shelterData.images = [files.images.newFilename];
+        await supabase.storage
+          .from("ShelterImages")
+          .upload(files.images.newFilename, fs.readFileSync(files.images.filepath), {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: files.image.mimetype,
+          });
+      }
+
+      // const { data: publicUrlData } = supabase.storage
+      //   .from("PetImages")
+      //   .getPublicUrl(files.images.newFilename);
+
+      // const imageUrl = publicUrlData?.publicUrl;
+
       shelterData.roleCode = 200;
       await ShelterUser.create(shelterData);
       return res.status(201).json({ msg: "Usuario creado correctamente" });

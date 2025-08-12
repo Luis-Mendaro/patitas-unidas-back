@@ -1,23 +1,8 @@
-/*
- * El seeder no es más que un archivo que contiene una función que se encarga
- * de insertar datos (generalmente de prueba) en una base de datos.
- *
- * El nombre "seeder" es una convención y significa "semillero".
- *
- * Además, en este caso, se está usando una librería llamada Faker
- * (https://fakerjs.dev/) para facilitar la creación de datos ficticios como
- * nombres, apellidos, títulos, direcciones y demás textos.
- *
- * Suele ser común que en los seeders exista un `for` donde se define la
- * cantidad de registros de prueba que se insertarán en la base de datos.
- *
- * En este ejemplo se están insertando 100 usuarios con nombres ficticios.
- */
-
 const faker = require("@faker-js/faker").fakerES;
 const { ShelterUser, User } = require("../models");
 const bcrypt = require("bcryptjs");
 const { nameShelters, locations } = require("./seedersData/sheltersData");
+const { petImages } = require("./seedersData/petsData");
 
 module.exports = async () => {
   const shelterUsers = [];
@@ -31,7 +16,11 @@ module.exports = async () => {
     password: hashedPassword,
     phoneNumber: "098123456",
     location: "Treinta y Tres",
-    image: "animales_sin_hogar.png",
+    // image: "animales_sin_hogar.png",
+    images: [
+      faker.helpers.arrayElement(petImages.dog),
+      "https://upload.wikimedia.org/wikipedia/commons/f/fc/Juan_Manuel_Blanes_-_Artigas_en_la_Ciudadela.jpg",
+    ],
     description:
       "Animales sin Hogar es una Asociación Civil sin fines de lucro, fundada el 16 de noviembre del 2003 en Montevideo – Uruguay. Al dia de hoy somos un santuario para cientos de animales de granja, caballos, ovejas, chivos, chanchos entre otros, además amparamos mas de 1000 perros y 300 gatos victimas del abandono y maltrato, que luego de recuperados les procuramos familias para el resto de sus vidas.",
     rating: faker.helpers.arrayElements(users, { min: 0, max: 50 }).map((user) => user.id),
@@ -53,7 +42,10 @@ module.exports = async () => {
       password: hashedPassword,
       phoneNumber: faker.phone.number(),
       location: faker.helpers.arrayElement(locations),
-      image: faker.image.avatarGitHub(),
+      images: [
+        faker.helpers.arrayElement(petImages.dog),
+        "https://upload.wikimedia.org/wikipedia/commons/f/fc/Juan_Manuel_Blanes_-_Artigas_en_la_Ciudadela.jpg",
+      ],
       description: faker.lorem.paragraph(),
       rating: faker.helpers.arrayElements(users, { min: 0, max: 50 }).map((user) => user.id),
       roleCode: 200,
