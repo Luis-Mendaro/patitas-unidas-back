@@ -41,7 +41,6 @@ async function store(req, res) {
       userId,
       petId,
       shelterUserId,
-      status: "active",
       requestContent,
     });
     return res.status(201).json({ newRequest });
@@ -54,9 +53,10 @@ async function store(req, res) {
 
 async function update(req, res) {
   try {
-    const validStatusValues = ["active", "cancelled", "adopted"];
+    const validStatusValues = ["new", "pending", "cancelled", "completed"];
     const requestId = req.params.id;
     const { status } = req.body;
+
     if (!validStatusValues.includes(status)) {
       return res.status(400).json({
         msg: "There was an attempt to update a request's status to an invalid status value",
