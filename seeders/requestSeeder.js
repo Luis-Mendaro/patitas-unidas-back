@@ -22,7 +22,7 @@ module.exports = async () => {
   const users = await User.findAll();
   const pets = await Pet.findAll();
   const shelters = await ShelterUser.findAll();
-  const status = ["active", "adopted", "cancelled"];
+  const status = ["new", "pending", "cancelled", "completed"];
 
   for (let i = 0; i < 100; i++) {
     requests.push({
