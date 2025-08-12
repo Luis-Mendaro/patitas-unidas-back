@@ -10,9 +10,9 @@ class Request extends Model {
           autoIncrement: true,
         },
         status: {
-          type: DataTypes.ENUM(["active", "adopted", "cancelled"]),
+          type: DataTypes.ENUM(["new", "pending", "cancelled", "completed"]),
           allowNull: false,
-          defaultValue: "active",
+          defaultValue: "new",
         },
         requestContent: {
           type: DataTypes.JSON,
