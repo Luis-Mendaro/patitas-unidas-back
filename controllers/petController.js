@@ -1,9 +1,9 @@
 const { Op } = require("sequelize");
 const { Pet, ShelterUser, Category } = require("../models");
 const formidable = require("formidable");
-const { createClient } = require("@supabase/supabase-js");
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
-const fs = require("fs");
+
+const { validateFieldsCreatePet } = require("../utils/validation");
+const { uploadImage } = require("../utils/uploadImage")
 
 // Display a listing of the resource.
 
@@ -45,6 +45,7 @@ async function index(req, res) {
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     const { count, rows } = await Pet.findAndCountAll({
+      order: [["createdAt", "DESC"]],
       where,
       limit: parseInt(limit),
       offset,
@@ -94,46 +95,34 @@ async function store(req, res) {
     });
 
     form.parse(req, async (err, fields, files) => {
-      const { name, description, sex, size, color, age, shelterUserId, categoryId } = fields;
-
-      if (!Object.values(fields).every(Boolean)) {
-        return res.status(400).json({ message: "Faltan campos obligatorios" });
+      if (err) {
+        return res.status(400).json({ message: "Error processing the form" });
+      }
+      const missing = validateFieldsCreatePet(fields);
+      if (missing) {
+        return res.status(400).json({ message: "Missing fields" });
       }
 
-      //Uploading image to supabase
-      const { data, error } = await supabase.storage
-        .from("PetImages")
-        .upload(files.images.newFilename, fs.createReadStream(files.images.filepath), {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: files.images.mimetype,
-          duplex: "half",
+      try {
+        const newImageName = await uploadImage(files.images, "PetImages");
+
+        await Pet.create({
+          ...fields,
+          images: [newImageName],
         });
 
-      // obtaining the url for said image from the bucket
-      // const { data: publicUrlData } = supabase.storage
-      //   .from("PetImages")
-      //   .getPublicUrl(files.images.newFilename);
-
-      // const imageUrl = publicUrlData?.publicUrl;
-
-      await Pet.create({
-        name,
-        description,
-        images: [files.images.newFilename],
-        sex,
-        size,
-        color,
-        age,
-        shelterUserId,
-        categoryId,
-      });
-      return res.status(200).json({ message: "Se creo una nueva mascota" });
+        return res.status(200).json({ message: "A new pet was created" });
+      } catch (uploadError) {
+        console.error(uploadError);
+        return res.status(500).json({ message: uploadError.message });
+      }
     });
   } catch (error) {
-    return res.status(500).json({ message: "Error del servidor" });
+    return res.status(500).json({ message: "Server error" });
   }
 }
+
+
 
 // Update the specified resource in storage.
 async function update(req, res) {
