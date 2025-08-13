@@ -10,7 +10,7 @@ async function index(req, res) {
     const shelters = await ShelterUser.findAll();
     return res.status(200).json({ shelters });
   } catch (error) {
-    return res.status(500).json({ msg: "Error interno del servidor." });
+    return res.status(500).json({ msg: "Internal server error" });
   }
 }
 
@@ -27,14 +27,14 @@ async function store(req, res) {
   });
 
   form.parse(req, async (err, fields, files) => {
-    if (err) {
-      console.error("Error al procesar el formulario: ", err);
-      return res.status(400).json({ msg: "Error interno del servidor" });
+    if (error) {
+      console.error("There was an error trying to parse the form ", err);
+      return res.status(400).json({ msg: "Internal server error" });
     }
     try {
       const { name, email, password, phoneNumber, location, description } = fields;
       const existingShelter = await ShelterUser.findOne({ where: { email } });
-      if (existingShelter) return res.status(400).json({ msg: "Email ya en uso" });
+      if (existingShelter) return res.status(400).json({ msg: "The email is already in use" });
       const hashedPassword = await bcrypt.hash(password, 10);
       const shelterData = {
         name,
@@ -63,10 +63,10 @@ async function store(req, res) {
 
       shelterData.roleCode = 200;
       await ShelterUser.create(shelterData);
-      return res.status(201).json({ msg: "Usuario creado correctamente" });
+      return res.status(201).json({ msg: "User created successfully" });
     } catch (error) {
-      console.error("Error al crear el usuario:", error);
-      return res.status(500).json({ msg: "Error interno del servidor" });
+      console.error("There was an error when trying to create a user:", error);
+      return res.status(500).json({ msg: "Internal server error" });
     }
   });
 }
@@ -89,7 +89,7 @@ async function update(req, res) {
   try {
     const shelterUser = await ShelterUser.findByPk(id);
     if (!shelterUser) {
-      return res.status(404).json({ msg: "Refugio no encontrado" });
+      return res.status(404).json({ msg: "Shelter not found" });
     }
 
     const filteredUpdates = {};
@@ -109,12 +109,10 @@ async function update(req, res) {
     const shelterUserData = shelterUser.toJSON();
     delete shelterUserData.password;
 
-    res
-      .status(200)
-      .json({ msg: "Usuario actualizado correctamente", shelterUser: shelterUserData });
+    res.status(200).json({ msg: "User updated successfully ", shelterUser: shelterUserData });
   } catch (error) {
-    console.error("Error al actualizar usuario:", error);
-    res.status(500).json({ msg: "Error interno del servidor" });
+    console.error("There was an error when trying to update a user:", error);
+    res.status(500).json({ msg: "Internal server error" });
   }
 }
 
@@ -123,10 +121,10 @@ async function destroy(req, res) {
   try {
     const shelterUser = await ShelterUser.findByPk(id);
     if (!shelterUser) {
-      return res.status(404).json({ msg: "Refugio no encontrado" });
+      return res.status(404).json({ msg: "Shelter not found" });
     }
     await shelterUser.destroy();
-    return res.json({ msg: "Se borró el usuario" });
+    return res.json({ msg: "User deleted" });
   } catch (error) {}
 }
 

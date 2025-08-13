@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Pet, ShelterUser, Category } = require("../models");
+const { Pet, ShelterUser, Category, Request } = require("../models");
 const formidable = require("formidable");
 
 const { validateFieldsCreatePet } = require("../utils/validation");
@@ -17,6 +17,7 @@ async function index(req, res) {
       ageMax,
       location,
       species,
+      shelterUserId,
       page = 1,
       limit = 20,
       sortBy = "id",
@@ -30,6 +31,7 @@ async function index(req, res) {
     const where = {};
     if (size) where.size = size;
     if (sex) where.sex = sex;
+    if (shelterUserId) where.shelterUserId = shelterUserId;
 
     if (typeof isAdopted !== "undefined") {
       where.isAdopted = isAdopted === "true";
@@ -73,7 +75,7 @@ async function index(req, res) {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error fetching pets" });
+    res.status(500).json({ msg: "Error fetching pets" });
   }
 }
 
@@ -81,14 +83,14 @@ async function index(req, res) {
 async function show(req, res) {
   try {
     const petId = req.params.id;
-    const pet = await Pet.findByPk(petId, { include: [ShelterUser, Category] });
+    const pet = await Pet.findByPk(petId, { include: [ShelterUser, Category, Request] });
 
     if (!pet) {
-      return res.status(404).json({ message: "Mascota no encontrada" });
+      return res.status(404).json({ msg: "Pet not found" });
     }
     return res.status(200).json({ pet });
   } catch (error) {
-    return res.status(500).json({ message: "Error del servidor" });
+    return res.status(500).json({ msg: "Server-side error" });
   }
 }
 
@@ -102,11 +104,11 @@ async function store(req, res) {
 
     form.parse(req, async (err, fields, files) => {
       if (err) {
-        return res.status(400).json({ message: "Error processing the form" });
+        return res.status(400).json({ msg: "Error processing the form" });
       }
       const missing = validateFieldsCreatePet(fields);
       if (missing) {
-        return res.status(400).json({ message: "Missing fields" });
+        return res.status(400).json({ msg: "Missing fields" });
       }
 
       try {
@@ -117,14 +119,14 @@ async function store(req, res) {
           images: [newImageName],
         });
 
-        return res.status(200).json({ message: "A new pet was created" });
+        return res.status(200).json({ msg: "A new pet was created" });
       } catch (uploadError) {
         console.error(uploadError);
-        return res.status(500).json({ message: uploadError.message });
+        return res.status(500).json({ msg: "Server-side error" });
       }
     });
   } catch (error) {
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ msg: "Server error" });
   }
 }
 
@@ -137,7 +139,7 @@ async function update(req, res) {
     const pet = await Pet.findByPk(petId);
 
     if (!pet) {
-      return res.status(404).json({ message: "Mascota no encontrada" });
+      return res.status(404).json({ msg: "Pet not found" });
     }
     if (name) pet.name = name;
     if (description) pet.description = description;
@@ -150,9 +152,9 @@ async function update(req, res) {
     if (categoryId) pet.categoryId = categoryId;
 
     await pet.save();
-    return res.status(200).json({ message: `${pet.name} fue actualizado/a correctamente`, pet });
+    return res.status(200).json({ msg: `${pet.name} updated successfully`, pet });
   } catch (error) {
-    return res.status(500).json({ message: "Error del servidor" });
+    return res.status(500).json({ msg: "Server-side error" });
   }
 }
 
@@ -163,14 +165,14 @@ async function destroy(req, res) {
     const pet = await Pet.findByPk(petId);
 
     if (!pet) {
-      return res.status(404).json({ message: "Mascota no encontrada" });
+      return res.status(404).json({ msg: "Pet not found" });
     }
 
     await pet.destroy();
 
-    return res.status(200).json({ message: `Se borro a ${pet.name} correctamente` });
+    return res.status(200).json({ msg: `${pet.name} was deleted` });
   } catch (error) {
-    return res.status(500).json({ message: "Error del servidor" });
+    return res.status(500).json({ msg: "Server-side error" });
   }
 }
 

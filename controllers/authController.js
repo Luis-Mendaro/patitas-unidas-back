@@ -7,7 +7,7 @@ async function login(req, res) {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "You should specify an email and a password." });
+      return res.status(400).json({ msg: "You should specify an email and a password." });
     }
 
     let user = await User.scope("withPassword").findOne({
@@ -26,10 +26,10 @@ async function login(req, res) {
       });
     }
 
-    if (!user) return res.status(401).json({ message: "Credenciales inválidas" });
+    if (!user) return res.status(401).json({ msg: "Invalid credentials" });
 
     const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) return res.status(401).json({ message: "Credenciales inválidas" });
+    if (!isValidPassword) return res.status(401).json({ msg: "Invalid credentials" });
 
     const token = jwt.sign({ sub: user.id, roleCode: user.roleCode }, process.env.JWT_SECRET);
 
@@ -41,7 +41,8 @@ async function login(req, res) {
       user: userData,
     });
   } catch (error) {
-    return res.status(500).json({ message: "No se pudo hacer login", error: error.message });
+    console.log("An error occurred during the login attempt: ", error);
+    return res.status(500).json({ msg: "Unable to log in" });
   }
 }
 
