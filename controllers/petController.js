@@ -3,7 +3,7 @@ const { Pet, ShelterUser, Category } = require("../models");
 const formidable = require("formidable");
 
 const { validateFieldsCreatePet } = require("../utils/validation");
-const { uploadImage } = require("../utils/uploadImage")
+const { uploadImage } = require("../utils/uploadImage");
 
 // Display a listing of the resource.
 
@@ -19,7 +19,13 @@ async function index(req, res) {
       species,
       page = 1,
       limit = 20,
+      sortBy = "id",
+      sortDir = "DESC",
     } = req.query;
+
+    const order = [[sortBy, sortDir]];
+
+    if (sortBy === "isAdopted") order.push(["createdAt", "DESC"]);
 
     const where = {};
     if (size) where.size = size;
@@ -45,7 +51,7 @@ async function index(req, res) {
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     const { count, rows } = await Pet.findAndCountAll({
-      order: [["createdAt", "DESC"]],
+      order,
       where,
       limit: parseInt(limit),
       offset,
@@ -121,8 +127,6 @@ async function store(req, res) {
     return res.status(500).json({ message: "Server error" });
   }
 }
-
-
 
 // Update the specified resource in storage.
 async function update(req, res) {
