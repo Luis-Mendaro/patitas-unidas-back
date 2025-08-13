@@ -17,6 +17,7 @@ async function index(req, res) {
       ageMax,
       location,
       species,
+      shelterUserId,
       page = 1,
       limit = 20,
     } = req.query;
@@ -24,6 +25,7 @@ async function index(req, res) {
     const where = {};
     if (size) where.size = size;
     if (sex) where.sex = sex;
+    if (shelterUserId) where.shelterUserId = shelterUserId;
 
     if (typeof isAdopted !== "undefined") {
       where.isAdopted = isAdopted === "true";
