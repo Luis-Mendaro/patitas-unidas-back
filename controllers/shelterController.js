@@ -80,7 +80,7 @@ async function update(req, res) {
     "password",
     "phoneNumber",
     "location",
-    "image",
+    "images",
     "description",
   ];
 

@@ -4,12 +4,6 @@ const shelterController = require("../controllers/shelterController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const authorizeRoles = require("../middlewares/authorizeRolesMiddleware");
 
-/*
- * API endpoints relacionados a los usuarios.
- *
- * Notar que todos estos endpoints tienen como prefijo el string "/users",
- * tal como se definió en el archivo `routes/index.js`.
- */
 router.post("/", shelterController.store);
 
 router.use(authMiddleware);
