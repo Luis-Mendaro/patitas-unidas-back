@@ -3,7 +3,10 @@ const nodemailer = require("nodemailer");
 
 async function index(req, res) {
   try {
-    const { limit = 20, order = "DESC", page = 1, shelterUserId } = req.query;
+
+    const { limit = 20, page = 1, sortBy = "id", sortDir = "DESC", shelterUserId } = req.query;
+
+    const order = [[sortBy, sortDir]];
 
     const where = {};
 
@@ -13,10 +16,10 @@ async function index(req, res) {
 
     const requests = await Request.findAll({
       where,
+      order,
       include: ["pet", "user"],
       limit: parseInt(limit, 10),
       offset: (page - 1) * parseInt(limit, 10),
-      order: [["createdAt", order.toUpperCase()]],
     });
 
     res.status(200).json({ requests });

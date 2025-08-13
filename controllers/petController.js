@@ -17,13 +17,21 @@ async function index(req, res) {
       ageMax,
       location,
       species,
+      shelterUserId,
       page = 1,
       limit = 20,
+      sortBy = "id",
+      sortDir = "DESC",
     } = req.query;
+
+    const order = [[sortBy, sortDir]];
+
+    if (sortBy === "isAdopted") order.push(["createdAt", "DESC"]);
 
     const where = {};
     if (size) where.size = size;
     if (sex) where.sex = sex;
+    if (shelterUserId) where.shelterUserId = shelterUserId;
 
     if (typeof isAdopted !== "undefined") {
       where.isAdopted = isAdopted === "true";
@@ -45,7 +53,7 @@ async function index(req, res) {
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     const { count, rows } = await Pet.findAndCountAll({
-      order: [["createdAt", "DESC"]],
+      order,
       where,
       limit: parseInt(limit),
       offset,
