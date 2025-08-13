@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Pet, ShelterUser, Category } = require("../models");
+const { Pet, ShelterUser, Category, Request } = require("../models");
 const formidable = require("formidable");
 const { createClient } = require("@supabase/supabase-js");
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
@@ -74,7 +74,7 @@ async function index(req, res) {
 async function show(req, res) {
   try {
     const petId = req.params.id;
-    const pet = await Pet.findByPk(petId, { include: [ShelterUser, Category] });
+    const pet = await Pet.findByPk(petId, { include: [ShelterUser, Category, Request] });
 
     if (!pet) {
       return res.status(404).json({ message: "Mascota no encontrada" });

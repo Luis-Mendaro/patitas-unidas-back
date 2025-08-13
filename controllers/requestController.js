@@ -1,13 +1,9 @@
-const { Request } = require("../models");
+const { Request, User, Pet } = require("../models");
+const nodemailer = require("nodemailer");
 
 async function index(req, res) {
   try {
-    const {
-      limit = 20,
-      order = "DESC",
-      page = 1,
-      shelterUserId
-    } = req.query;
+    const { limit = 20, order = "DESC", page = 1, shelterUserId } = req.query;
 
     const where = {};
 
@@ -30,9 +26,7 @@ async function index(req, res) {
   }
 }
 
-
-
-async function show(req, res) { }
+async function show(req, res) {}
 
 async function store(req, res) {
   try {
@@ -72,10 +66,56 @@ async function update(req, res) {
       status,
     });
 
-    const fullRequest = await Request.findByPk(requestId, { include: ["user", "pet"] });
+    const fullRequest = await Request.findByPk(requestId, {
+      include: [
+        {
+          model: User,
+          as: "user",
+        },
+        {
+          model: Pet,
+          as: "pet",
+          include: [Request],
+        },
+      ],
+    });
 
-    if (fullRequest.status === "adopted") {
+    if (fullRequest.status === "completed") {
       await fullRequest.pet.update({ isAdopted: true });
+
+      const transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      //Sending an email to the user for which the adoption request was accepted
+      const completedRequestMailOptions = {
+        from: process.env.EMAIL_USER,
+        to: fullRequest.user.email,
+        subject: `Solicitud de adopcion aprobada!`,
+        text: `Hola ${fullRequest.user.name},\n\n Estamos felices de informarte que tu solicitud de adopcion para ${fullRequest.pet.name} fue aprobada!`,
+      };
+      await transporter.sendMail(completedRequestMailOptions);
+
+      //Sending an email to the other users that had an adoption request with either pending or new status for the same pet and setting those requests' status to cancelled
+      for (const request of fullRequest.pet.requests) {
+        if (request.status === "new" || request.status === "pending") {
+          await request.update({
+            status: "cancelled",
+          });
+          const cancelledRequestMailOptions = {
+            from: process.env.EMAIL_USER,
+            to: request.requestContent.email,
+            subject: `Solicitud de adopcion`,
+            text: `Hola ${request.requestContent.fullname},\n\n Te estamos contactando porque había una solicitud de adopción para ${fullRequest.pet.name} de tu parte en nuestro sistema. 
+            Te queremos informar que ${fullRequest.pet.name} ya ha encontrado un hogar, por lo que se ha cancelado tu solicitud de adopción.`,
+          };
+          await transporter.sendMail(cancelledRequestMailOptions);
+        }
+      }
     }
     return res
       .status(200)
@@ -83,6 +123,7 @@ async function update(req, res) {
   } catch (error) {
     return res.status(500).json({
       msg: "There was an error when trying to update the request's status",
+      error: error,
     });
   }
 }
