@@ -1,5 +1,5 @@
 function validateFieldsCreatePet(fields) {
-    const required = ["name", "description", "sex", "size", "color", "age", "shelterUserId", "categoryId"];
+    const required = ["name", "description", "sex", "size", "age", "shelterUserId", "categoryId"];
     const missing = required.filter((key) => !fields[key]);
     return missing.length ? missing : null;
 }
