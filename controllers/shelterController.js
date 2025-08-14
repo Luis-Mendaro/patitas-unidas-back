@@ -22,20 +22,65 @@ async function show(req, res) {
 
 async function store(req, res) {
   const form = formidable({
-    multiples: true,
+    multiples: false,
     keepExtensions: true,
   });
 
   form.parse(req, async (err, fields, files) => {
-    if (error) {
+    console.log("FIELDS:", fields);
+    console.log("FILES:", files);
+    if (err) {
       console.error("There was an error trying to parse the form ", err);
       return res.status(400).json({ msg: "Internal server error" });
     }
     try {
       const { name, email, password, phoneNumber, location, description } = fields;
+      if (!name || !email || !password || !phoneNumber || !location || !description) {
+        return res.status(400).json({ msg: "Missing required fields" });
+      }
+
+      const image = files.image;
+      if (!image || !image.filepath) {
+        return res.status(400).json({ msg: "Image is required" });
+      }
+
+      // Validaciones de archivo
+      if (!image.mimetype?.startsWith("image/")) {
+        return res.status(400).json({ msg: "Only image files are allowed" });
+      }
+      if (image.size === 0) {
+        return res.status(400).json({ msg: "Empty file" });
+      }
+
       const existingShelter = await ShelterUser.findOne({ where: { email } });
       if (existingShelter) return res.status(400).json({ msg: "The email is already in use" });
+
       const hashedPassword = await bcrypt.hash(password, 10);
+
+      const filename = image.newFilename; // generado por formidable
+      const pathInBucket = `shelters/${filename}`;
+      const fileBuffer = fs.readFileSync(image.filepath);
+
+      const { error: uploadError } = await supabase.storage
+        .from("ShelterImages")
+        .upload(pathInBucket, fileBuffer, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: image.mimetype,
+        });
+
+      if (uploadError) {
+        console.error("Supabase upload error:", uploadError);
+        return res.status(500).json({ msg: "Image upload failed" });
+      }
+
+      // URL pública (si el bucket es público)
+      const { data: publicUrlData } = supabase.storage
+        .from("ShelterImages")
+        .getPublicUrl(pathInBucket);
+
+      const imageUrl = publicUrlData?.publicUrl || null;
+
       const shelterData = {
         name,
         email,
@@ -43,27 +88,16 @@ async function store(req, res) {
         phoneNumber,
         location,
         description,
+        roleCode: 200,
+        images: imageUrl ? [imageUrl] : [], // o guardá [pathInBucket] si preferís path interno
       };
-      if (files.images) {
-        shelterData.images = [files.images.newFilename];
-        await supabase.storage
-          .from("ShelterImages")
-          .upload(files.images.newFilename, fs.readFileSync(files.images.filepath), {
-            cacheControl: "3600",
-            upsert: false,
-            contentType: files.image.mimetype,
-          });
-      }
 
-      // const { data: publicUrlData } = supabase.storage
-      //   .from("PetImages")
-      //   .getPublicUrl(files.images.newFilename);
-
-      // const imageUrl = publicUrlData?.publicUrl;
-
-      shelterData.roleCode = 200;
-      await ShelterUser.create(shelterData);
-      return res.status(201).json({ msg: "User created successfully" });
+      const created = await ShelterUser.create(shelterData);
+      return res.status(201).json({
+        msg: "User created successfully",
+        id: created.id,
+        image: imageUrl,
+      });
     } catch (error) {
       console.error("There was an error when trying to create a user:", error);
       return res.status(500).json({ msg: "Internal server error" });
