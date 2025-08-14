@@ -53,6 +53,11 @@ class ShelterUser extends Model {
             key: "code",
           },
         },
+        status: {
+          type: DataTypes.ENUM(["new", "active", "rejected"]),
+          allowNull: false,
+          defaultValue: "new",
+        },
       },
       {
         sequelize,

@@ -7,8 +7,8 @@ const { petImages } = require("./seedersData/petsData");
 module.exports = async () => {
   const shelterUsers = [];
   const hashedPassword = await bcrypt.hash("1234", 10);
-
   const users = await User.findAll();
+  const status = ["new", "active", "rejected"];
 
   shelterUsers.push({
     name: "Animales Sin Hogar",
@@ -25,6 +25,7 @@ module.exports = async () => {
       "Animales sin Hogar es una Asociación Civil sin fines de lucro, fundada el 16 de noviembre del 2003 en Montevideo – Uruguay. Al dia de hoy somos un santuario para cientos de animales de granja, caballos, ovejas, chivos, chanchos entre otros, además amparamos mas de 1000 perros y 300 gatos victimas del abandono y maltrato, que luego de recuperados les procuramos familias para el resto de sus vidas.",
     rating: faker.helpers.arrayElements(users, { min: 0, max: 50 }).map((user) => user.id),
     roleCode: 200,
+    status: "active",
   });
 
   for (let i = 1; i < 15; i++) {
@@ -49,6 +50,7 @@ module.exports = async () => {
       description: faker.lorem.paragraph(),
       rating: faker.helpers.arrayElements(users, { min: 0, max: 50 }).map((user) => user.id),
       roleCode: 200,
+      status: faker.helpers.arrayElement(status),
     });
   }
 
