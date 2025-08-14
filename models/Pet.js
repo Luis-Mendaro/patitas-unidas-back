@@ -29,10 +29,6 @@ class Pet extends Model {
           type: DataTypes.STRING,
           allowNull: false,
         },
-        color: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
         age: {
           type: DataTypes.SMALLINT,
           allowNull: false,
@@ -45,7 +41,7 @@ class Pet extends Model {
       },
       {
         sequelize,
-        modelName: "pet", // Nombre del modelo en singular y en minúscula.
+        modelName: "pet",
       },
     );
     return Pet;

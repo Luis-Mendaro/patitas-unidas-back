@@ -134,7 +134,7 @@ async function store(req, res) {
 async function update(req, res) {
   try {
     const petId = req.params.id;
-    const { name, description, images, sex, size, color, age, shelterUserId, categoryId } =
+    const { name, description, images, sex, size, age, shelterUserId, categoryId } =
       req.body;
     const pet = await Pet.findByPk(petId);
 
@@ -146,7 +146,6 @@ async function update(req, res) {
     if (images) pet.images = images;
     if (sex) pet.sex = sex;
     if (size) pet.size = size;
-    if (color) pet.color = color;
     if (age) pet.age = age;
     if (shelterUserId) pet.shelterUserId = shelterUserId;
     if (categoryId) pet.categoryId = categoryId;

@@ -1,6 +1,6 @@
 const faker = require("@faker-js/faker").fakerES;
 const { Pet, Category, ShelterUser } = require("../models");
-const { petsNames, petsColors, petImages } = require("./seedersData/petsData");
+const { petsNames, petImages } = require("./seedersData/petsData");
 
 module.exports = async () => {
   const pets = [];
@@ -34,7 +34,6 @@ module.exports = async () => {
       ],
       sex: faker.person.sex(),
       size: faker.helpers.arrayElement(sizes),
-      color: faker.helpers.arrayElement(petsColors),
       age: faker.number.int({ min: 3, max: 180 }),
       isAdopted: faker.datatype.boolean(0.2),
       categoryId,

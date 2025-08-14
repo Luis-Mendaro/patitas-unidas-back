@@ -99,18 +99,6 @@ export const petsNames = [
   "Miki",
 ];
 
-export const petsColors = [
-  "Negro",
-  "Blanco",
-  "Marrón",
-  "Canela",
-  "Gris",
-  "Dorado",
-  "Con manchas",
-  "Chocolate",
-  "Crema",
-];
-
 export const petImages = {
   dog: [
     "https://images.pexels.com/photos/1851164/pexels-photo-1851164.jpeg",
