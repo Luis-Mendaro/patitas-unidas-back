@@ -3,7 +3,6 @@ const nodemailer = require("nodemailer");
 
 async function index(req, res) {
   try {
-
     const { limit = 20, page = 1, sortBy = "id", sortDir = "DESC", shelterUserId } = req.query;
 
     const order = [[sortBy, sortDir]];
@@ -14,7 +13,7 @@ async function index(req, res) {
       where.shelterUserId = shelterUserId;
     }
 
-    const requests = await Request.findAll({
+    const { count, rows } = await Request.findAndCountAll({
       where,
       order,
       include: ["pet", "user"],
@@ -22,7 +21,7 @@ async function index(req, res) {
       offset: (page - 1) * parseInt(limit, 10),
     });
 
-    res.status(200).json({ requests });
+    res.status(200).json({ requests: rows, total: count });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "There was an error when trying to fetch all requests." });
