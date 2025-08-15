@@ -28,8 +28,6 @@ async function store(req, res) {
   });
 
   form.parse(req, async (err, fields, files) => {
-    console.log("FIELDS:", fields);
-    console.log("FILES:", files);
     if (err) {
       console.error("There was an error trying to parse the form ", err);
       return res.status(400).json({ msg: "Internal server error" });
