@@ -1,4 +1,4 @@
-const { ShelterUser } = require("../models");
+const { ShelterUser, Pet } = require("../models");
 const formidable = require("formidable");
 const bcrypt = require("bcryptjs");
 const { createClient } = require("@supabase/supabase-js");
@@ -7,8 +7,25 @@ const fs = require("fs");
 
 async function index(req, res) {
   try {
-    const shelters = await ShelterUser.findAll();
-    return res.status(200).json({ shelters });
+    const { status, limit = 20, page = 1 } = req.query;
+    const where = {};
+
+    if (status) where.status = status;
+
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    const { count, rows } = await ShelterUser.findAndCountAll({
+      where,
+      limit: parseInt(limit),
+      distinct: true,
+      offset,
+      include: [
+        {
+          model: Pet,
+        },
+      ],
+    });
+    return res.status(200).json({ shelters: rows, total: count });
   } catch (error) {
     return res.status(500).json({ msg: "Internal server error" });
   }
