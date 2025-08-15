@@ -7,7 +7,10 @@ const fs = require("fs");
 
 async function index(req, res) {
   try {
-    const { status, limit = 20, page = 1 } = req.query;
+    const { status, limit = 20, page = 1, sortBy = "id", sortDir = "DESC" } = req.query;
+
+    const order = [[sortBy, sortDir]];
+
     const where = {};
 
     if (status) where.status = status;
@@ -15,6 +18,7 @@ async function index(req, res) {
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     const { count, rows } = await ShelterUser.findAndCountAll({
+      order,
       where,
       limit: parseInt(limit),
       distinct: true,
