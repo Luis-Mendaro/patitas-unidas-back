@@ -1,4 +1,5 @@
-const { ShelterUser } = require("../models");
+const { ShelterUser, Pet, Category, Request, Product } = require("../models");
+
 const formidable = require("formidable");
 const bcrypt = require("bcryptjs");
 const { createClient } = require("@supabase/supabase-js");
@@ -8,18 +9,49 @@ const { uploadImage } = require("../utils/uploadImage");
 
 async function index(req, res) {
   try {
-    const shelters = await ShelterUser.findAll();
-    return res.status(200).json({ shelters });
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await ShelterUser.findAndCountAll({
+      limit,
+      offset,
+      order: [['createdAt', 'ASC']],
+      include: "pets",
+      distinct: true,
+    });
+
+    const totalPages = Math.ceil(count / limit);
+
+    return res.status(200).json({
+      shelters: rows,
+      total: count,
+      totalPages,
+    });
   } catch (error) {
+    console.error('Error loading shelters:', error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 }
 
+
 async function show(req, res) {
   const { id } = req.params;
-  const shelter = await ShelterUser.findByPk(id, { include: ["pets", "requests", "products"] });
+
+  const shelter = await ShelterUser.findByPk(id, {
+    include: [
+      {
+        model: Pet,
+        include: [Category, ShelterUser]      // Esto no queda nada bien, pero es como se usa en PetCard.jsx en el front de usuarios
+      },
+      Product
+    ]
+  });
+
   return res.json({ shelter });
 }
+
+
 
 async function store(req, res) {
   const form = formidable({
@@ -134,7 +166,7 @@ async function destroy(req, res) {
     }
     await shelterUser.destroy();
     return res.json({ msg: "User deleted" });
-  } catch (error) {}
+  } catch (error) { }
 }
 
 module.exports = {
