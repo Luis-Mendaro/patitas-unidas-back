@@ -8,8 +8,10 @@ const { uploadImage } = require("../utils/uploadImage");
 
 async function index(req, res) {
   try {
+    const { status, limit = 20, page = 1, sortBy = "id", sortDir = "DESC" } = req.query;
 
-    const { status, limit = 20, page = 1 } = req.query;
+    const order = [[sortBy, sortDir]];
+
     const where = {};
 
     if (status) where.status = status;
@@ -17,6 +19,7 @@ async function index(req, res) {
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     const { count, rows } = await ShelterUser.findAndCountAll({
+      order,
       where,
       limit: parseInt(limit),
       distinct: true,
@@ -29,11 +32,10 @@ async function index(req, res) {
     });
     return res.status(200).json({ shelters: rows, total: count });
   } catch (error) {
-    console.error('Error loading shelters:', error);
+    console.error("Error loading shelters:", error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 }
-
 
 async function show(req, res) {
   const { id } = req.params;
@@ -42,16 +44,14 @@ async function show(req, res) {
     include: [
       {
         model: Pet,
-        include: [Category, ShelterUser]      // Esto no queda nada bien, pero es como se usa en PetCard.jsx en el front de usuarios
+        include: [Category, ShelterUser], // Esto no queda nada bien, pero es como se usa en PetCard.jsx en el front de usuarios
       },
-      Product
-    ]
+      Product,
+    ],
   });
 
   return res.json({ shelter });
 }
-
-
 
 async function store(req, res) {
   const form = formidable({
@@ -166,7 +166,7 @@ async function destroy(req, res) {
     }
     await shelterUser.destroy();
     return res.json({ msg: "User deleted" });
-  } catch (error) { }
+  } catch (error) {}
 }
 
 module.exports = {
