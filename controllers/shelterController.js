@@ -1,5 +1,4 @@
 const { ShelterUser, Pet, Category, Request, Product } = require("../models");
-
 const formidable = require("formidable");
 const bcrypt = require("bcryptjs");
 const { createClient } = require("@supabase/supabase-js");
@@ -9,25 +8,26 @@ const { uploadImage } = require("../utils/uploadImage");
 
 async function index(req, res) {
   try {
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 10;
-    const offset = (page - 1) * limit;
+
+    const { status, limit = 20, page = 1 } = req.query;
+    const where = {};
+
+    if (status) where.status = status;
+
+    const offset = (parseInt(page) - 1) * parseInt(limit);
 
     const { count, rows } = await ShelterUser.findAndCountAll({
-      limit,
-      offset,
-      order: [['createdAt', 'ASC']],
-      include: "pets",
+      where,
+      limit: parseInt(limit),
       distinct: true,
+      offset,
+      include: [
+        {
+          model: Pet,
+        },
+      ],
     });
-
-    const totalPages = Math.ceil(count / limit);
-
-    return res.status(200).json({
-      shelters: rows,
-      total: count,
-      totalPages,
-    });
+    return res.status(200).json({ shelters: rows, total: count });
   } catch (error) {
     console.error('Error loading shelters:', error);
     return res.status(500).json({ msg: "Internal server error" });
