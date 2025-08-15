@@ -1,9 +1,10 @@
-const { ShelterUser, Pet } = require("../models");
+const { ShelterUser, Pet, Category, Request, Product } = require("../models");
 const formidable = require("formidable");
 const bcrypt = require("bcryptjs");
 const { createClient } = require("@supabase/supabase-js");
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 const fs = require("fs");
+const { uploadImage } = require("../utils/uploadImage");
 
 async function index(req, res) {
   try {
@@ -31,13 +32,24 @@ async function index(req, res) {
     });
     return res.status(200).json({ shelters: rows, total: count });
   } catch (error) {
+    console.error("Error loading shelters:", error);
     return res.status(500).json({ msg: "Internal server error" });
   }
 }
 
 async function show(req, res) {
   const { id } = req.params;
-  const shelter = await ShelterUser.findByPk(id, { include: ["pets", "requests", "products"] });
+
+  const shelter = await ShelterUser.findByPk(id, {
+    include: [
+      {
+        model: Pet,
+        include: [Category, ShelterUser], // Esto no queda nada bien, pero es como se usa en PetCard.jsx en el front de usuarios
+      },
+      Product,
+    ],
+  });
+
   return res.json({ shelter });
 }
 
@@ -48,8 +60,6 @@ async function store(req, res) {
   });
 
   form.parse(req, async (err, fields, files) => {
-    console.log("FIELDS:", fields);
-    console.log("FILES:", files);
     if (err) {
       console.error("There was an error trying to parse the form ", err);
       return res.status(400).json({ msg: "Internal server error" });
@@ -78,30 +88,7 @@ async function store(req, res) {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const filename = image.newFilename; // generado por formidable
-      const pathInBucket = `shelters/${filename}`;
-      const fileBuffer = fs.readFileSync(image.filepath);
-
-      const { error: uploadError } = await supabase.storage
-        .from("ShelterImages")
-        .upload(pathInBucket, fileBuffer, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: image.mimetype,
-        });
-
-      if (uploadError) {
-        console.error("Supabase upload error:", uploadError);
-        return res.status(500).json({ msg: "Image upload failed" });
-      }
-
-      // URL pública (si el bucket es público)
-      const { data: publicUrlData } = supabase.storage
-        .from("ShelterImages")
-        .getPublicUrl(pathInBucket);
-
-      const imageUrl = publicUrlData?.publicUrl || null;
-
+      const newImageName = await uploadImage(image, "ShelterImages");
       const shelterData = {
         name,
         email,
@@ -110,14 +97,13 @@ async function store(req, res) {
         location,
         description,
         roleCode: 200,
-        images: imageUrl ? [imageUrl] : [], // o guardá [pathInBucket] si preferís path interno
+        images: [newImageName],
       };
 
       const created = await ShelterUser.create(shelterData);
       return res.status(201).json({
         msg: "User created successfully",
         id: created.id,
-        image: imageUrl,
       });
     } catch (error) {
       console.error("There was an error when trying to create a user:", error);
