@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const { createClient } = require("@supabase/supabase-js");
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 const fs = require("fs");
+const { uploadImage } = require("../utils/uploadImage");
 
 async function index(req, res) {
   try {
@@ -57,30 +58,7 @@ async function store(req, res) {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const filename = image.newFilename; // generado por formidable
-      const pathInBucket = `shelters/${filename}`;
-      const fileBuffer = fs.readFileSync(image.filepath);
-
-      const { error: uploadError } = await supabase.storage
-        .from("ShelterImages")
-        .upload(pathInBucket, fileBuffer, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: image.mimetype,
-        });
-
-      if (uploadError) {
-        console.error("Supabase upload error:", uploadError);
-        return res.status(500).json({ msg: "Image upload failed" });
-      }
-
-      // URL pública (si el bucket es público)
-      const { data: publicUrlData } = supabase.storage
-        .from("ShelterImages")
-        .getPublicUrl(pathInBucket);
-
-      const imageUrl = publicUrlData?.publicUrl || null;
-
+      const newImageName = await uploadImage(image, "ShelterImages");
       const shelterData = {
         name,
         email,
@@ -89,14 +67,13 @@ async function store(req, res) {
         location,
         description,
         roleCode: 200,
-        images: imageUrl ? [imageUrl] : [], // o guardá [pathInBucket] si preferís path interno
+        images: [newImageName],
       };
 
       const created = await ShelterUser.create(shelterData);
       return res.status(201).json({
         msg: "User created successfully",
         id: created.id,
-        image: imageUrl,
       });
     } catch (error) {
       console.error("There was an error when trying to create a user:", error);
