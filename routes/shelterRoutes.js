@@ -6,10 +6,10 @@ const authorizeRoles = require("../middlewares/authorizeRolesMiddleware");
 
 router.post("/", shelterController.store);
 router.get("/", shelterController.index);
+router.get("/:id", shelterController.show);
 
 router.use(authMiddleware);
 
-router.get("/:id", shelterController.show);
 router.patch("/:id", shelterController.update);
 router.delete("/:id", shelterController.destroy);
 
