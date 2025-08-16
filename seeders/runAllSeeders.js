@@ -9,7 +9,7 @@ async function runAllSeeders() {
   await require("./userSeeder")();
   await require("./shelterUserSeeder")();
   await require("./categorySeeder")();
-  await require("./petSeeder")();
+  await require("./alternativePetSeeder")();
   await require("./likedPetsSeeder")();
   await require("./productSeeder")();
   await require("./requestSeeder")();
