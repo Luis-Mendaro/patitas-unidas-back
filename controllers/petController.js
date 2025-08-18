@@ -60,7 +60,10 @@ async function index(req, res) {
       include: [
         {
           model: ShelterUser,
-          where: Object.keys(whereLocation).length ? whereLocation : undefined,
+          where: {
+            status: "active",
+            ...(Object.keys(whereLocation).length ? whereLocation : {}),
+          },
         },
         {
           model: Category,
@@ -68,6 +71,7 @@ async function index(req, res) {
         },
       ],
     });
+
 
     res.json({
       pets: rows,
