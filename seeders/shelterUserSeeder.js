@@ -42,7 +42,7 @@ module.exports = async () => {
       description: sheltersData[i].description,
       // rating: faker.helpers.arrayElements(users, { min: 0, max: 50 }).map((user) => user.id),
       roleCode: 200,
-      status: faker.helpers.arrayElement(status),
+      status: "active",
     });
   }
 
