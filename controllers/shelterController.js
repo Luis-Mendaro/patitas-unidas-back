@@ -123,6 +123,7 @@ async function update(req, res) {
     "location",
     "images",
     "description",
+    "status"
   ];
 
   const fields = req.body;
@@ -166,7 +167,7 @@ async function destroy(req, res) {
     }
     await shelterUser.destroy();
     return res.json({ msg: "User deleted" });
-  } catch (error) {}
+  } catch (error) { }
 }
 
 module.exports = {
