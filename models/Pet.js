@@ -14,7 +14,7 @@ class Pet extends Model {
           allowNull: false,
         },
         description: {
-          type: DataTypes.STRING,
+          type: DataTypes.TEXT,
           allowNull: false,
         },
         images: {
