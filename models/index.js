@@ -1,7 +1,5 @@
 const { Sequelize } = require("sequelize");
 
-console.log(process.env.DB_HOST);
-
 const sequelize = new Sequelize(
   process.env.DB_DATABASE,
   process.env.DB_USERNAME,
@@ -10,7 +8,10 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     dialect: process.env.DB_CONNECTION,
     dialectModule: require("pg"),
-    logging: false, // Para que no aparezcan mensajes en consola.
+    logging: false,
+    dialectOptions: {
+      ssl: { require: true, rejectUnauthorized: false },
+    },
   },
 );
 
