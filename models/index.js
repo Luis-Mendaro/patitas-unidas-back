@@ -12,6 +12,7 @@ const sequelize = new Sequelize(
     dialectOptions: {
       ssl: { require: true, rejectUnauthorized: false },
     },
+    pool: { max: 1, min: 0, idle: 0, acquire: 30000 },
   },
 );
 
