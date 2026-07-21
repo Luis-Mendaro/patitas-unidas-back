@@ -42,7 +42,7 @@ async function login(req, res) {
     });
   } catch (error) {
     console.log("An error occurred during the login attempt: ", error);
-    return res.status(500).json({ msg: "Unable to log in" });
+    return res.status(500).json({ msg: "Unable to log in", error: String(error) });
   }
 }
 
