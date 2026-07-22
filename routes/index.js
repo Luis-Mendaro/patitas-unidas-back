@@ -11,6 +11,51 @@ module.exports = (app) => {
   app.use("/auth", authRoutes);
   app.use("/requests", requestRoutes);
 
+  app.post("/fix-pet-images", async (req, res) => {
+    const { Pet, Category } = require("../models");
+    const pexels = {
+      dog: [
+        "https://images.pexels.com/photos/1851164/pexels-photo-1851164.jpeg",
+        "https://images.pexels.com/photos/220938/pexels-photo-220938.jpeg",
+        "https://images.pexels.com/photos/2253275/pexels-photo-2253275.jpeg",
+        "https://images.pexels.com/photos/3687770/pexels-photo-3687770.jpeg",
+        "https://images.pexels.com/photos/247937/pexels-photo-247937.jpeg",
+        "https://images.pexels.com/photos/333083/pexels-photo-333083.jpeg",
+        "https://images.pexels.com/photos/1938126/pexels-photo-1938126.jpeg",
+        "https://images.pexels.com/photos/1390784/pexels-photo-1390784.jpeg",
+        "https://images.pexels.com/photos/686094/pexels-photo-686094.jpeg",
+        "https://images.pexels.com/photos/1458916/pexels-photo-1458916.jpeg",
+      ],
+      cat: [
+        "https://images.pexels.com/photos/1047369/pexels-photo-1047369.jpeg",
+        "https://images.pexels.com/photos/1457792/pexels-photo-1457792.jpeg",
+        "https://images.pexels.com/photos/800152/pexels-photo-800152.jpeg",
+        "https://images.pexels.com/photos/751050/pexels-photo-751050.jpeg",
+        "https://images.pexels.com/photos/1741205/pexels-photo-1741205.jpeg",
+        "https://images.pexels.com/photos/127028/pexels-photo-127028.jpeg",
+        "https://images.pexels.com/photos/991831/pexels-photo-991831.jpeg",
+        "https://images.pexels.com/photos/691583/pexels-photo-691583.jpeg",
+        "https://images.pexels.com/photos/1521304/pexels-photo-1521304.jpeg",
+        "https://images.pexels.com/photos/248350/pexels-photo-248350.jpeg",
+      ],
+      other: [
+        "https://images.pexels.com/photos/110820/pexels-photo-110820.jpeg",
+        "https://images.pexels.com/photos/56733/pexels-photo-56733.jpeg",
+      ],
+    };
+    const categories = await Category.findAll();
+    const results = {};
+    for (const cat of categories) {
+      const urls = pexels[cat.species] || pexels.other;
+      const pets = await Pet.findAll({ where: { categoryId: cat.id } });
+      for (let i = 0; i < pets.length; i++) {
+        await pets[i].update({ images: [urls[i % urls.length]] });
+      }
+      results[cat.species] = pets.length;
+    }
+    res.json(results);
+  });
+
   app.post("/fix-images", async (req, res) => {
     const { ShelterUser } = require("../models");
     const images = {
